@@ -29,7 +29,9 @@ jobs:
       targetType: 'inline'
       script: |
         # Get the list of changed files
-        $changedFiles = git diff HEAD HEAD~ --name-only
+        git fetch --depth=1 origin +refs/heads/$(Build.SourceBranch):refs/remotes/origin/$(Build.SourceBranch)
+        $changedFiles = git diff --name-only $(Build.SourceVersion)~..$(Build.SourceVersion)
+
 
         # Loop through the changed files to find the common folder path
         $commonFolder = ""
