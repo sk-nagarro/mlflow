@@ -27,6 +27,7 @@ jobs:
       targetType: 'inline'
       script: |
         # Fetch all the branches and tags to ensure we have the commit in history
+        git diff --name-only HEAD^..HEAD | tail -1 | grep -o '^[^/]*' ; git branch
         git fetch --all
 
         # Get the commit hash for the latest commit on the branch
