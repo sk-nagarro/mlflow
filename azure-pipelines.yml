@@ -28,9 +28,14 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        # Get the list of changed files
-        git fetch origin $(Build.SourceBranch)
-        $commitRange = "$(Build.SourceVersion)^..$(Build.SourceVersion)"
+        # Fetch all the branches and tags to ensure we have the commit in history
+        git fetch --all
+        # Get the commit hash for the latest commit on the branch
+        $commitHash = git rev-parse $(Build.SourceBranch)
+        # Get the commit hash for the parent of the latest commit
+        $parentCommitHash = git rev-parse $(Build.SourceBranch)^
+        $commitRange = "$($parentCommitHash)..$($commitHash)"
+      
         $changedFiles = git diff --name-only $commitRange
 
         # Loop through the changed files to find the common folder path
