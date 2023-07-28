@@ -1,0 +1,75 @@
+# azure-pipelines.yml
+
+trigger:
+  branches:
+    exclude:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+variables:
+  - name: targetFolder
+    value: ''  # This variable will be set dynamically based on the changed folder
+  - name: pythonVersion
+    value: ''
+  - name: qaPath
+    value: ''
+
+jobs:
+- job: SetTargetFolder
+  displayName: 'Detect Changed Folder'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Get the list of changed files
+        $changedFiles = git diff HEAD HEAD~ --name-only
+
+        # Loop through the changed files to find the common folder path
+        $commonFolder = ""
+        foreach ($file in $changedFiles) {
+          if ($file -like "artifacts/*") {
+            $commonFolder = "artifacts"
+            break
+          }
+          elseif ($file -like "mlruns/*") {
+            $commonFolder = "mlruns"
+            break
+          }
+        }
+
+        # Set Python version and QA_PATH based on the detected folder
+        if ($commonFolder -eq "artifacts") {
+          Write-Host "##vso[task.setvariable variable=targetFolder]artifacts"
+          Write-Host "##vso[task.setvariable variable=pythonVersion]3.8"
+          Write-Host "##vso[task.setvariable variable=qaPath]artifacts/QA_OLD"
+        }
+        elseif ($commonFolder -eq "mlruns") {
+          Write-Host "##vso[task.setvariable variable=targetFolder]mlruns"
+          Write-Host "##vso[task.setvariable variable=pythonVersion]3.9"
+          Write-Host "##vso[task.setvariable variable=qaPath]mlruns/QA_NEW"
+        }
+    displayName: 'Detect Changed Folder'
+
+- job: CreateWheelFile
+  displayName: 'Create Wheel File'
+  dependsOn: SetTargetFolder
+  condition: and(succeeded(), ne(variables.targetFolder, ''))
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      echo "Setting Python version to $(pythonVersion)"
+      echo "Setting QA_PATH to $(qaPath)"
+      cd $(targetFolder)
+      ls -la
+      # Replace the following command with the actual wheel file creation command for artifacts or mlruns
+      echo "Creating wheel file in $(targetFolder)"
+      env
+    displayName: 'Create Wheel File'
