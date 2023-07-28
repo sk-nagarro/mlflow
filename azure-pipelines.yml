@@ -28,7 +28,7 @@ jobs:
       script: |
         # Fetch all the branches and tags to ensure we have the commit in history
         ls -la
-        cd s
+        git log ; git branch
         git diff --name-only HEAD^..HEAD | tail -1 | grep -o '^[^/]*' ; git branch
         git fetch --all
 
