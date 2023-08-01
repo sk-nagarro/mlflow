@@ -22,6 +22,10 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    displayName: "Checkout & Build.Reason: $(Build.Reason) & Build.SourceBranchName: $(Build.SourceBranchName)"
   - task: PowerShell@2
     inputs:
       targetType: 'inline'
