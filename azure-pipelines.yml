@@ -27,9 +27,10 @@ jobs:
       targetType: 'inline'
       script: |
         # Fetch all the branches and tags to ensure we have the commit in history
+        env
         ls -la
         git log
-        git branch && echo "Done"
+        git branch -a && echo "Done"
         git diff --name-only HEAD^..HEAD | tail -1 | grep -o '^[^/]*' ; git branch
         git fetch --all
 
