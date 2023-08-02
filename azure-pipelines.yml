@@ -31,4 +31,5 @@ jobs:
       targetType: 'inline'
       script: |
         # Fetch all the branches and tags to ensure we have the commit in history
-        git whatchanged
+        git log -1 --oneline --name-only
+        #git whatchanged
