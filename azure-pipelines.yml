@@ -39,10 +39,10 @@ jobs:
         git fetch --all
 
         # Get the commit hash for the latest commit on the branch
-        $commitHash = git rev-parse $(Build.SourceBranch)
+        $commitHash = git rev-parse $(Build.SourceBranchName)
 
         # Get the commit hash for the parent of the latest commit
-        $parentCommitHash = git rev-parse $(Build.SourceBranch)^
+        $parentCommitHash = git rev-parse $(Build.SourceBranchName)^
 
         # Set the commit range
         $commitRange = "$($parentCommitHash)..$($commitHash)"
